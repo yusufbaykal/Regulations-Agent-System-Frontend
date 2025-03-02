@@ -13,7 +13,7 @@ import NewChatModal from '../components/modals/new_chat_modal';
 import FloatingActionButtons from '../components/buttons/floating_action_buttons';
 import WelcomeScreen from '../components/welcome/welcome_screen';
 import AgentSelector from '../components/agent_selector';
-
+import TokenSettings from '../components/settings/token_settings';
 
 import { Chat, Message, ExampleQuestions, AgentType } from '../components/types';
 
@@ -37,6 +37,9 @@ const exampleQuestions: ExampleQuestions = {
 
 const font = Jost({ subsets: ['latin'] });
 
+// LocalStorage anahtar sabiti
+const USER_TOKEN_KEY = 'university_agent_user_token';
+
 export default function Home() {
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,6 +55,27 @@ export default function Home() {
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
   const [showScrollToTopButton, setShowScrollToTopButton] = useState(false);
   const [isScrollDetected, setIsScrollDetected] = useState(false);
+  const [isTokenSettingsOpen, setIsTokenSettingsOpen] = useState(false);
+  const [userToken, setUserToken] = useState<string>('');
+
+  // Token'ı localStorage'dan yükle
+  useEffect(() => {
+    const savedToken = localStorage.getItem(USER_TOKEN_KEY);
+    if (savedToken) {
+      setUserToken(savedToken);
+      // Mevcut sohbetlere token'ı ekle
+      setChats(prevChats => 
+        prevChats.map(chat => ({
+          ...chat,
+          userToken: savedToken
+        }))
+      );
+      setCurrentChat(prevChat => ({
+        ...prevChat,
+        userToken: savedToken
+      }));
+    }
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -136,6 +160,35 @@ export default function Home() {
     setIsExamplesOpen(!isExamplesOpen);
   };
 
+  const toggleTokenSettings = () => {
+    setIsTokenSettingsOpen(!isTokenSettingsOpen);
+  };
+
+  const saveToken = (token: string) => {
+    setUserToken(token);
+    
+    // Token'ı localStorage'a kaydet
+    if (token) {
+      localStorage.setItem(USER_TOKEN_KEY, token);
+    } else {
+      localStorage.removeItem(USER_TOKEN_KEY);
+    }
+    
+    // Tüm sohbetlere token'ı ekle veya kaldır
+    setChats(prevChats => 
+      prevChats.map(chat => ({
+        ...chat,
+        userToken: token || undefined
+      }))
+    );
+    
+    // Mevcut sohbete token'ı ekle veya kaldır
+    setCurrentChat(prevChat => ({
+      ...prevChat,
+      userToken: token || undefined
+    }));
+  };
+
   const openNewChatModal = () => {
     setIsSidebarOpen(false);
     setIsExamplesOpen(false);
@@ -168,7 +221,11 @@ export default function Home() {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/ask`,
-        { question, agent_type: currentChat.agentType },
+        { 
+          question, 
+          agent_type: currentChat.agentType,
+          user_token: currentChat.userToken
+        },
         { signal: abortControllerRef.current.signal }
       );
       const newBotMessage: Message = { type: 'bot', content: response.data.answer };
@@ -215,7 +272,8 @@ export default function Home() {
       id: Date.now().toString(),
       name: 'Yeni Sohbet',
       messages: [],
-      agentType: 'multi'
+      agentType: 'multi',
+      userToken: userToken || undefined
     };
     setChats([...chats, newChat]);
     setCurrentChat(newChat);
@@ -235,7 +293,13 @@ export default function Home() {
   const deleteChat = (chatId: string) => {
     const newChats = chats.filter(chat => chat.id !== chatId);
     if (newChats.length === 0) {
-      const newChat: Chat = { id: Date.now().toString(), name: 'Yeni Sohbet', messages: [], agentType: 'multi' };
+      const newChat: Chat = { 
+        id: Date.now().toString(), 
+        name: 'Yeni Sohbet', 
+        messages: [], 
+        agentType: 'multi',
+        userToken: userToken || undefined
+      };
       setChats([newChat]);
       setCurrentChat(newChat);
     } else {
@@ -268,6 +332,7 @@ export default function Home() {
           toggleLeftSidebar={toggleLeftSidebar}
           createNewChat={createNewChat}
           toggleExamplesSidebar={toggleExamplesSidebar}
+          toggleTokenSettings={toggleTokenSettings}
         />
 
         {/* Sliding Chat History Panel - Adjusted position to be below the navbar */}
@@ -348,6 +413,14 @@ export default function Home() {
         createNewChat={createNewChat}
       />
 
+      {/* Token Ayarları Modalı */}
+      <TokenSettings
+        isOpen={isTokenSettingsOpen}
+        onClose={() => setIsTokenSettingsOpen(false)}
+        currentToken={userToken}
+        onSaveToken={saveToken}
+      />
+
       {/* Floating Action Buttons - No changes */}
       {isScrollDetected && (
         <FloatingActionButtons
@@ -358,6 +431,9 @@ export default function Home() {
           scrollToTop={scrollToTop}
         />
       )}
+
+      {/* Mesaj sonuna kaydırma referansı */}
+      <div ref={messagesEndRef} />
     </div>
   );
 }
