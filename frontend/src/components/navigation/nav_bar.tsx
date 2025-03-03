@@ -61,11 +61,11 @@ const NavBar: React.FC<NavBarProps> = ({
       
       {/* Social Media Links */}
       <div className="flex items-center gap-3 ml-auto">
-        <a href="https://github.com/yusufbaykaloglu" target="_blank" rel="noopener noreferrer" 
+        <a href="https://github.com/yusufbaykal" target="_blank" rel="noopener noreferrer" 
            className="text-gray-700 hover:bg-gray-100 p-2 rounded-lg transition-colors">
           <FaGithub size={20} />
         </a>
-        <a href="https://www.linkedin.com/in/yusuf-baykaloglu/" target="_blank" rel="noopener noreferrer"
+        <a href="https://www.linkedin.com/in/yusufbaykaloglu/" target="_blank" rel="noopener noreferrer"
            className="text-gray-700 hover:bg-gray-100 p-2 rounded-lg transition-colors">
           <FaLinkedin size={20} />
         </a>
