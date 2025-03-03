@@ -14,7 +14,6 @@ import FloatingActionButtons from '../components/buttons/floating_action_buttons
 import WelcomeScreen from '../components/welcome/welcome_screen';
 import AgentSelector from '../components/agent_selector';
 
-
 import { Chat, Message, ExampleQuestions, AgentType } from '../components/types';
 
 const exampleQuestions: ExampleQuestions = {
@@ -168,7 +167,10 @@ export default function Home() {
     try {
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/ask`,
-        { question, agent_type: currentChat.agentType },
+        { 
+          question, 
+          agent_type: currentChat.agentType
+        },
         { signal: abortControllerRef.current.signal }
       );
       const newBotMessage: Message = { type: 'bot', content: response.data.answer };
@@ -235,7 +237,12 @@ export default function Home() {
   const deleteChat = (chatId: string) => {
     const newChats = chats.filter(chat => chat.id !== chatId);
     if (newChats.length === 0) {
-      const newChat: Chat = { id: Date.now().toString(), name: 'Yeni Sohbet', messages: [], agentType: 'multi' };
+      const newChat: Chat = { 
+        id: Date.now().toString(), 
+        name: 'Yeni Sohbet', 
+        messages: [], 
+        agentType: 'multi'
+      };
       setChats([newChat]);
       setCurrentChat(newChat);
     } else {
@@ -358,6 +365,9 @@ export default function Home() {
           scrollToTop={scrollToTop}
         />
       )}
+
+      {/* Mesaj sonuna kaydırma referansı */}
+      <div ref={messagesEndRef} />
     </div>
   );
 }
