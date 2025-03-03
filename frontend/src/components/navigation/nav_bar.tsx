@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaGithub, FaLinkedin, FaPen, FaListAlt, FaKey } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaPen, FaListAlt } from 'react-icons/fa';
 import { SiHuggingface } from 'react-icons/si';
 import { LuPanelLeft } from 'react-icons/lu';
 
@@ -7,7 +7,6 @@ interface NavBarProps {
   toggleLeftSidebar: () => void;
   createNewChat: () => void;
   toggleExamplesSidebar: () => void;
-  toggleTokenSettings: () => void;
   isSidebarOpen: boolean;
 }
 
@@ -15,7 +14,6 @@ const NavBar: React.FC<NavBarProps> = ({
   toggleLeftSidebar, 
   createNewChat, 
   toggleExamplesSidebar,
-  toggleTokenSettings,
   isSidebarOpen 
 }) => {
   return (
@@ -57,18 +55,6 @@ const NavBar: React.FC<NavBarProps> = ({
           <FaListAlt size={25} className="text-gray-700" />
           <span className="absolute top-14 bg-white shadow-lg text-gray-700 px-2 py-1 rounded text-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 border">
             Örnek Sorular
-          </span>
-        </button>
-        
-        {/* API Token Settings Button */}
-        <button
-          onClick={toggleTokenSettings}
-          className="w-[54px] h-[54px] flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors group relative"
-          title="API Token Ayarları"
-        >
-          <FaKey size={22} className="text-gray-700" />
-          <span className="absolute top-14 bg-white shadow-lg text-gray-700 px-2 py-1 rounded text-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 border">
-            API Token Ayarları
           </span>
         </button>
       </div>

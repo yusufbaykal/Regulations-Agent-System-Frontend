@@ -10,7 +10,6 @@ export interface Chat {
   name: string;
   messages: Message[];
   agentType: AgentType;
-  userToken?: string;
 }
 
 export interface ExampleQuestions {
