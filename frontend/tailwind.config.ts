@@ -16,6 +16,7 @@ const config: Config = {
       animation: {
         'fadeIn': 'fadeIn 0.5s ease-in',
         'fadeOut': 'fadeOut 0.5s ease-out',
+        'fade-in-up': 'fade-in-up 0.3s ease-out'
       },
       keyframes: {
         fadeIn: {
@@ -26,6 +27,16 @@ const config: Config = {
           '0%': { opacity: '1', transform: 'translateY(0)' },
           '100%': { opacity: '0', transform: 'translateY(10px)' },
         },
+        'fade-in-up': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(10px)'
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)'
+          },
+        }
       },
     },
   },

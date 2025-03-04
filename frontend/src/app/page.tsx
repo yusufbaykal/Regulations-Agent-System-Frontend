@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Jost } from 'next/font/google';
+import { FaListAlt, FaTimes } from 'react-icons/fa';
 
 import NavBar from '../components/navigation/nav_bar';
 import ChatSidebar from '../components/sidebars/chat_sidebar';
@@ -43,7 +44,7 @@ export default function Home() {
   const [isExamplesOpen, setIsExamplesOpen] = useState(false);
   const [expandedUniversity, setExpandedUniversity] = useState<string | null>(null);
   const [chats, setChats] = useState<Chat[]>([
-    { id: '1', name: 'Yeni Sohbet', messages: [], agentType: 'multi' }
+    { id: '1', name: 'Yeni Sohbet', messages: [], agentType: 'db' }
   ]);
   const [currentChat, setCurrentChat] = useState<Chat>(chats[0]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -51,6 +52,7 @@ export default function Home() {
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
   const [showScrollToTopButton, setShowScrollToTopButton] = useState(false);
   const [isScrollDetected, setIsScrollDetected] = useState(false);
+  const [showExamplesPopup, setShowExamplesPopup] = useState(true);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -123,6 +125,16 @@ export default function Home() {
     };
   }, [isExamplesOpen]);
 
+  useEffect(() => {
+    // Popup'ı 3 saniye sonra otomatik kapat
+    if (showExamplesPopup) {
+      const timer = setTimeout(() => {
+        setShowExamplesPopup(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showExamplesPopup]);
+
   const toggleLeftSidebar = () => {
     if (isExamplesOpen) setIsExamplesOpen(false);
     if (isNewChatOpen) setIsNewChatOpen(false);
@@ -163,6 +175,18 @@ export default function Home() {
     setLoading(true);
     setIsExamplesOpen(false);
     setIsSidebarOpen(false);
+
+    // Yanıt hazırlanıyor mesajını ekle
+    const preparingMessage: Message = { 
+      type: 'bot', 
+      content: '⌛ Yanıtınız hazırlanıyor...',
+      isLoading: true
+    };
+    const chatWithPreparingMessage = {
+      ...updatedChat,
+      messages: [...updatedChat.messages, preparingMessage]
+    };
+    updateChat(chatWithPreparingMessage);
 
     try {
       const response = await axios.post(
@@ -217,7 +241,7 @@ export default function Home() {
       id: Date.now().toString(),
       name: 'Yeni Sohbet',
       messages: [],
-      agentType: 'multi'
+      agentType: 'db'
     };
     setChats([...chats, newChat]);
     setCurrentChat(newChat);
@@ -241,7 +265,7 @@ export default function Home() {
         id: Date.now().toString(), 
         name: 'Yeni Sohbet', 
         messages: [], 
-        agentType: 'multi'
+        agentType: 'db'
       };
       setChats([newChat]);
       setCurrentChat(newChat);
@@ -276,6 +300,28 @@ export default function Home() {
           createNewChat={createNewChat}
           toggleExamplesSidebar={toggleExamplesSidebar}
         />
+
+        {/* Örnek Sorular Popup */}
+        {showExamplesPopup && (
+          <div className="fixed top-[62px] left-[108px] bg-white/90 backdrop-blur-sm shadow-lg rounded-xl p-3 z-50 border border-gray-100/20 animate-fade-in-up flex items-center gap-3 max-w-[300px]">
+            <div className="flex items-center gap-3 flex-1">
+              <div className="p-2 bg-gradient-to-br from-indigo-500 to-blue-600 rounded-xl shadow-indigo-500/20 shadow-lg">
+                <FaListAlt size={18} className="text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                  Örnek sorulara buradan ulaşabilirsiniz.
+                </p>
+              </div>
+            </div>
+            <button 
+              onClick={() => setShowExamplesPopup(false)}
+              className="text-gray-400 hover:text-gray-600 p-1 hover:bg-gray-100 rounded-lg transition-all"
+            >
+              <FaTimes size={12} />
+            </button>
+          </div>
+        )}
 
         {/* Sliding Chat History Panel - Adjusted position to be below the navbar */}
         <ChatSidebar

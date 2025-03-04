@@ -10,10 +10,10 @@ interface AgentSelectorProps {
 const AgentSelector: React.FC<AgentSelectorProps> = ({ selectedAgent, onSelectAgent }) => {
   const agents = [
     { 
-      id: 'multi', 
-      name: 'Multi-Agent', 
+      id: 'db', 
+      name: 'Database Agent', 
       description: '', 
-      badge: 'Önerilen' 
+      badge: 'Önerilen'
     },
     { 
       id: 'web', 
@@ -21,8 +21,8 @@ const AgentSelector: React.FC<AgentSelectorProps> = ({ selectedAgent, onSelectAg
       description: '' 
     },
     { 
-      id: 'db', 
-      name: 'Database Agent', 
+      id: 'multi', 
+      name: 'Multi-Agent', 
       description: '' 
     }
   ];

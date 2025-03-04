@@ -53,9 +53,6 @@ const NavBar: React.FC<NavBarProps> = ({
           title="Örnek Sorular"
         >
           <FaListAlt size={25} className="text-gray-700" />
-          <span className="absolute top-14 bg-white shadow-lg text-gray-700 px-2 py-1 rounded text-sm opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 border">
-            Örnek Sorular
-          </span>
         </button>
       </div>
       
